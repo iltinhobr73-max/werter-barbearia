@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Painel da Agenda | Barbearia Marcos Werter</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0c0c0d">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <style>
+    body::after { display: none; }
+    .p-wrap { max-width: 760px; margin-inline: auto; padding: 20px 16px 80px; }
+    .p-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0 22px; border-bottom: 1px solid var(--line); margin-bottom: 22px; }
+    .p-top .mark__big { font-size: 22px; }
+    .p-tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 22px; scrollbar-width: none; }
+    .p-tabs button { flex: none; padding: 11px 14px; border: 1px solid var(--line-2); font: 700 15px/1 var(--f-display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .p-tabs button[aria-selected="true"] { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+    .p-panel { display: grid; gap: 14px; }
+    .p-day { display: grid; gap: 8px; margin-bottom: 18px; }
+    .p-day h2 { font: 800 22px/1 var(--f-display); text-transform: uppercase; letter-spacing: .04em; display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+    .p-day h2 small { font: 500 13px/1 var(--f-body); color: var(--dim); text-transform: none; letter-spacing: 0; }
+    .p-item { display: grid; grid-template-columns: 62px 1fr auto; gap: 4px 14px; align-items: center; padding: 14px; background: var(--bg-2); border: 1px solid var(--line); }
+    .p-item.is-block { background: repeating-linear-gradient(-45deg, var(--bg-2) 0 10px, var(--bg-3) 10px 20px); }
+    .p-item.is-past { opacity: .45; }
+    .p-time { font: 800 24px/1 var(--f-display); grid-row: span 2; }
+    .p-time small { display: block; font: 500 12px/1.4 var(--f-body); color: var(--dim); }
+    .p-name { font-weight: 600; }
+    .p-meta { font-size: 14px; color: var(--muted); }
+    .p-tag { display: inline-block; font: 600 10px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; padding: 3px 6px; border: 1px solid var(--gold); color: var(--gold); margin-left: 6px; vertical-align: 2px; }
+    .p-actions { grid-row: span 2; display: flex; gap: 6px; }
+    .p-btn { padding: 10px 12px; border: 1px solid var(--line-2); font: 700 13px/1 var(--f-display); letter-spacing: .08em; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+    .p-btn:hover { border-color: var(--text); }
+    .p-btn--danger { color: #ff8a7e; border-color: rgba(255, 138, 126, .4); }
+    .p-empty { color: var(--dim); font-size: 15px; padding: 6px 0 10px; }
+    .p-form { display: grid; gap: 12px; padding: 18px; background: var(--bg-2); border: 1px solid var(--line); }
+    .p-form h2 { font: 800 24px/1 var(--f-display); text-transform: uppercase; }
+    .p-form p { color: var(--muted); font-size: 14px; }
+    .p-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .p-form label { display: grid; gap: 6px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+    .p-form input, .p-form select { width: 100%; padding: 13px 12px; background: var(--bg); border: 1px solid var(--line-2); color: var(--text); font: 400 16px var(--f-body); border-radius: 0; color-scheme: dark; }
+    .p-form input:focus, .p-form select:focus { outline: none; border-color: var(--gold); }
+    .p-wd { display: flex; gap: 6px; flex-wrap: wrap; }
+    .p-wd label { display: block; }
+    .p-wd input { position: absolute; opacity: 0; }
+    .p-wd span { display: block; padding: 10px 12px; border: 1px solid var(--line-2); font: 700 14px/1 var(--f-display); letter-spacing: .06em; cursor: pointer; color: var(--muted); }
+    .p-wd input:checked + span { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+    .p-msg { font-size: 14px; padding: 10px 12px; }
+    .p-msg.ok { color: var(--ok); border: 1px solid rgba(60, 207, 124, .4); }
+    .p-msg.err { color: #ff8a7e; border: 1px solid rgba(255, 138, 126, .4); }
+    .p-login { max-width: 380px; margin: 14vh auto 0; }
+    .p-rule { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; background: var(--bg-2); border: 1px solid var(--line); }
+    .p-rule b { font: 700 19px/1.1 var(--f-display); text-transform: uppercase; }
+    .p-rule span { display: block; font-size: 13px; color: var(--muted); }
+    .p-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .p-stats div { padding: 14px; border: 1px solid var(--line); }
+    .p-stats b { display: block; font: 800 34px/1 var(--f-display); color: var(--gold); }
+    .p-stats span { font-size: 12px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+    .p-time { grid-column: 1; grid-row: 1 / span 2; }
+    .p-name { grid-column: 2; grid-row: 1; }
+    .p-meta { grid-column: 2; grid-row: 2; }
+    .p-actions { grid-column: 3; grid-row: 1 / span 2; }
+    @media (max-width: 520px) {
+      .p-item { grid-template-columns: 62px 1fr; row-gap: 6px; }
+      .p-actions { grid-column: 1 / -1; grid-row: 3; margin-top: 8px; }
+      .p-actions .p-btn { flex: 1; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="p-wrap">
+    <header class="p-top">
+      <a class="mark" href="/"><span class="mark__small">Barbearia</span><span class="mark__big">Marcos Werter</span></a>
+      <button class="p-btn" type="button" data-logout hidden>Sair</button>
+    </header>
+
+    <!-- LOGIN -->
+    <form class="p-form p-login" data-login>
+      <h2>Painel da agenda</h2>
+      <p>Área do Werter. Digite a senha do painel.</p>
+      <label>Senha<input type="password" name="pass" autocomplete="current-password" required></label>
+      <p class="p-msg err" data-login-err hidden></p>
+      <button class="btn btn--gold btn--block" type="submit">Entrar</button>
+    </form>
+
+    <div data-app hidden>
+      <div class="p-stats" style="margin-bottom:18px">
+        <div><b data-st-today>0</b><span>hoje</span></div>
+        <div><b data-st-tomorrow>0</b><span>amanhã</span></div>
+        <div><b data-st-week>0</b><span>7 dias</span></div>
+      </div>
+      <nav class="p-tabs" role="tablist">
+        <button type="button" role="tab" aria-selected="true" data-tab="agenda">Agenda</button>
+        <button type="button" role="tab" aria-selected="false" data-tab="marcar">Marcar cliente</button>
+        <button type="button" role="tab" aria-selected="false" data-tab="bloquear">Bloquear</button>
+        <button type="button" role="tab" aria-selected="false" data-tab="fixos">Bloqueios fixos</button>
+      </nav>
+
+      <section class="p-panel" data-panel="agenda"><div data-agenda></div></section>
+
+      <section class="p-panel" data-panel="marcar" hidden>
+        <form class="p-form" data-f-book>
+          <h2>Marcar para um cliente</h2>
+          <p>Para quem pediu pelo WhatsApp ou no balcão. Respeita a regra de 1h entre clientes.</p>
+          <div class="p-row">
+            <label>Dia<input type="date" name="date" required></label>
+            <label>Horário<select name="time" required></select></label>
+          </div>
+          <label>Serviço<select name="service"><option value="corte">Corte</option><option value="barba">Barba</option><option value="corte-barba">Corte + barba</option></select></label>
+          <div class="p-row">
+            <label>Nome<input type="text" name="name" required maxlength="60"></label>
+            <label>WhatsApp<input type="tel" name="phone" required inputmode="tel"></label>
+          </div>
+          <p class="p-msg" hidden data-msg></p>
+          <button class="btn btn--gold" type="submit">Marcar horário</button>
+        </form>
+      </section>
+
+      <section class="p-panel" data-panel="bloquear" hidden>
+        <form class="p-form" data-f-block>
+          <h2>Bloquear um período</h2>
+          <p>Folga, compromisso, feriado. Os horários somem do site na hora. Se o fim for antes do início, vai até o dia seguinte (ex.: 22:00 → 08:00).</p>
+          <label>Dia<input type="date" name="date" required></label>
+          <div class="p-row">
+            <label>Das<select name="from" required></select></label>
+            <label>Até<select name="to" required></select></label>
+          </div>
+          <label>Motivo (opcional)<input type="text" name="note" maxlength="120" placeholder="Ex.: folga"></label>
+          <p class="p-msg" hidden data-msg></p>
+          <button class="btn btn--gold" type="submit">Bloquear</button>
+        </form>
+      </section>
+
+      <section class="p-panel" data-panel="fixos" hidden>
+        <form class="p-form" data-f-rule>
+          <h2>Bloqueio fixo</h2>
+          <p>Repete toda semana. Ideal para a madrugada (agenda 24h): ex. todos os dias das 23:00 às 07:00.</p>
+          <div class="p-wd" data-wd></div>
+          <div class="p-row">
+            <label>Das<select name="from" required></select></label>
+            <label>Até<select name="to" required></select></label>
+          </div>
+          <label>Motivo (opcional)<input type="text" name="note" maxlength="120" placeholder="Ex.: dormir"></label>
+          <p class="p-msg" hidden data-msg></p>
+          <button class="btn btn--gold" type="submit">Salvar bloqueio fixo</button>
+        </form>
+        <div class="p-panel" data-rules></div>
+      </section>
+    </div>
+  </div>
+
+  <script src="/painel/painel.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /painel
+Disallow: /api/
+
+Sitemap: https://barbearia-marcos-werter.vercel.app/sitemap.xml
